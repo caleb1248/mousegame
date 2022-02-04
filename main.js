@@ -6,5 +6,6 @@ const player = new Player(ctx);
 player.render();
 function frame(){
   reqestAnimationFrame(frame);
-  player.render()
+  player.render();
 }
+frame()
