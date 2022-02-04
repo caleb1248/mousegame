@@ -1,5 +1,6 @@
 import './style.css'
 import Player from './player'
 const canvas = document.querySelector('canvas');
-const player = new Player(canvas);
-player.render()
+const ctx = canvas.getContext('2d');
+const player = new Player(ctx);
+player.render();
