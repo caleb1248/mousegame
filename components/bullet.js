@@ -1,3 +1,13 @@
 export default class Bullet{
-    constructor()
+    constructor(initialPosition, direction){
+        this.position = initialPosition;
+        this.speed = 4;
+        setInterval(() => {
+            console.log(this.position)
+        })
+    }
+    
+    update(){
+        
+    }
 }

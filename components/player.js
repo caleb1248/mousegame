@@ -1,4 +1,6 @@
+import Bullet from './bullet';
 export default class Player {
+
     constructor(canvas) {
         this.position = new XY();
 
@@ -49,6 +51,9 @@ export default class Player {
             if (ArrowDown) this.position.y += this.speed;
             if (ArrowLeft) this.position.x -= this.speed;
         }
+    }
+    shoot(){
+        var bullet = new Bullet(this.position, this.angle);
     }
 }
 class XY{
