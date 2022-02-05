@@ -1,5 +1,5 @@
-import './style.css'
-import Player from './player'
+import './style.css';
+import Player from './components/player';
 const canvas = document.querySelector('canvas');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -12,4 +12,6 @@ function frame(){
   player.render();
 }
 frame();
-canvas.addEventListener('mousemove', player.handleMouseMove.bind(player))
+window.addEventListener('mousemove', player.handleMouseMove.bind(player));
+window.addEventListener('keydown',player.handleKeyEvent.bind(player));
+window.addEventListener('keyup',player.handleKeyEvent.bind(player));
