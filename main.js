@@ -1,30 +1,41 @@
 import './style.css';
 
 class Bullet {
-  constructor(initialPosition, direction) {
-    this.position = initialPosition;
-    this.speed = 4;
+  constructor({x,y}, direction, canvas) {
+    this.canvas = canvas;
+    this.pos = {x: x, y: y};
+    this.speed = 8;
     this.direction = direction;
   }
 
   update() {
+    this.pos.x += this.speed * Math.cos(this.direction);
+    this.pos.y += this.speed * Math.sin(this.direction);
+  }
 
+  render() {
+    this.canvas.save();
+    this.canvas.translate(this.pos.x, this.pos.y);
+    this.canvas.rotate(this.direction - Math.PI / 2);
+    this.canvas.fillRect(-5, -5, 5, 5);
+    this.canvas.restore();
   }
 }
 
 class Player {
   constructor(canvas) {
-    this.position = new XY();
+    this.position = { x: 0, y: 0 }
     this.canvas = canvas;
     this.angle = Math.PI * 3 / 8;
     this.speed = 1;
-    const mouse = new XY();
+    const mouse = { x: 0, y:0 }
     this.keys = {
       'ArrowRight': false,
       'ArrowUp': false,
       'ArrowDown': false,
       'ArrowLeft': false
-    }
+    };
+    this.bullets = [];
   }
 
   render() {
@@ -33,6 +44,9 @@ class Player {
     this.canvas.rotate(this.angle - Math.PI / 2);
     this.canvas.fillRect(-5, -5, 10, 10);
     this.canvas.restore();
+    for(var bullet of this.bullets){
+      bullet.render();
+    }
   }
 
   handleMouseMove({ clientX, clientY }) {
@@ -58,9 +72,12 @@ class Player {
       if (ArrowDown) this.position.y += this.speed;
       if (ArrowLeft) this.position.x -= this.speed;
     }
+    for(var bullet of this.bullets){
+      bullet.update();
+    }
   }
   shoot() {
-    var bullet = new Bullet(this.position, this.angle);
+    this.bullets.push(new Bullet(this.position, this.angle, this.canvas));
   }
 }
 
@@ -81,3 +98,6 @@ frame();
 window.addEventListener('mousemove', player.handleMouseMove.bind(player));
 window.addEventListener('keydown', player.handleKeyEvent.bind(player));
 window.addEventListener('keyup', player.handleKeyEvent.bind(player));
+window.addEventListener('click', () => player.shoot());
+
+setInterval(() => console.log(player.position), 1000)
