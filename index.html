@@ -1,13 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
-  </head>
-  <body>
-    <canvas>Sorry, your browser doesn't support html canvas</canvas>
-    <noscript>YO MUST ENABLE JAVASCRIPT</noscript>
-    <script type="module" src="/main.js"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css">
+  <script src="/socket.io/socket.io.js"></script>
+  <title>Vite App</title>
+</head>
+
+<body>
+  <canvas>Sorry, your browser doesn't support html canvas</canvas>
+  <noscript>YO MUST ENABLE JAVASCRIPT</noscript>
+  <script>
+    const canvas = document.querySelector('canvas');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const ctx = canvas.getContext('2d');
+    const socket = io();
+    socket.emit('joining')
+    let keys = {
+      'ArrowRight': false,
+      'ArrowUp': false,
+      'ArrowDown': false,
+      'ArrowLeft': false
+    };
+
+    /**
+     * @function handleMouseMove
+     * @param {MouseEvent} e
+      */
+    function handleMouseMove(e) {
+      socket.emit('mousemove', e)
+    }
+
+    function handleClick(){
+      socket.emit('shoot');
+    }
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('click', handleClick);
+    onkeydown = onkeyup = function(e){
+      keys[e.key] = e.type == "keydown";
+      var {ArrowRight, ArrowLeft, ArrowDown, ArrowUp} = keys;
+      var newKeys = {ArrowRight: ArrowRight, ArrowLeft: ArrowLeft, ArrowDown:  ArrowDown, ArrowUp: ArrowUp}
+      if(newKeys != keys){
+        keys = newKeys;
+        socket.emit('keychange', keys);
+      }
+    }
+  </script>
+</body>
+
 </html>
