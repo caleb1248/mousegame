@@ -1,13 +1,22 @@
-const express = require('express'),
-  app = express(),
+import express from 'express';
+import { Server } from 'socket.io';
+import { Player } from './player.js';
+const app = express(),
   server = app.listen(3000, () => console.log('Go to http://localhost:3000'));
-  io = require('socket.io')(server);
+
+/**
+ * @type {Player[]}
+ */
+let users = [];
+
+const io = new Server(server);
 
 app.use(express.static('.'));
+
 io.on('connection', socket => {
   console.log('connection');
   socket.on('joining', () => {
-    var player = new Player();
+    const player = new Player();
     users.push(player);
 
     socket.on('mousemove', player.handleMouseMove.bind(player));
@@ -16,69 +25,13 @@ io.on('connection', socket => {
   });
 });
 
-/**
- * @type {Array<Player>}
- */
-var users = [];
+setInterval(() => {
+  var sendData = [];
 
-class Bullet {
-  constructor({x,y}, direction, canvas) {
-    this.canvas = canvas;
-    this.pos = {x: x, y: y};
-    this.speed = 8;
-    this.direction = direction;
+  for(var user of users){
+    user.update();
+    sendData.push(user.position);
   }
 
-  update() {
-    this.pos.x += this.speed * Math.cos(this.direction);
-    this.pos.y += this.speed * Math.sin(this.direction);
-  }
-}
-
-class Player {
-  constructor() {
-    this.position = { x: 0, y: 0 }
-    this.angle = Math.PI * 3 / 8;
-    this.speed = 1;
-    this.keys = {
-      'ArrowRight': false,
-      'ArrowUp': false,
-      'ArrowDown': false,
-      'ArrowLeft': false
-    };
-    this.bullets = [];
-  }
-
-  handleMouseMove({ clientX, clientY }) {
-    const { x, y } = this.position;
-    const dy = clientY - y,
-      dx = clientX - x;
-    this.angle = Math.atan2(dy, dx);
-  }
-
-  handleKeyEvent(newKeys) {
-    console.log('keychange fired: new keys are', newKeys);
-    this.keys = newKeys
-  }
-
-  update() {
-    var { ArrowRight, ArrowLeft, ArrowUp, ArrowDown } = this.keys;
-    if (ArrowRight && ArrowLeft) {
-
-    } else if (ArrowUp && ArrowDown) {
-
-    } else {
-      if (ArrowUp) this.position.y -= this.speed;
-      if (ArrowRight) this.position.x += this.speed;
-      if (ArrowDown) this.position.y += this.speed;
-      if (ArrowLeft) this.position.x -= this.speed;
-    }
-    for(var bullet of this.bullets){
-      bullet.update();
-    }
-  }
-  shoot() {
-    console.log('someone shooted')
-    this.bullets.push(new Bullet(this.position, this.angle, this.canvas));
-  }
-}
+  io.emit('frame', sendData);
+}, 1000/60)
