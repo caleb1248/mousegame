@@ -8,7 +8,7 @@ export class Player {
   constructor() {
     this.position = { x: 0, y: 0 }
     this.angle = Math.PI * 3 / 8;
-    this.speed = 3;
+    this.speed = 2.3;
     this.keys = {
       'ArrowRight': false,
       'ArrowUp': false,
