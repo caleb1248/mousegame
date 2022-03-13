@@ -1,8 +1,8 @@
 import express from 'express';
 import { Server } from 'socket.io';
-import { Player } from './player.js';
-const app = express(),
-  server = app.listen(3000, () => console.log('Go to http://localhost:3000'));
+import { Player } from './lib/player.js';
+const app = express();
+const server = app.listen(3000, () => console.log('Go to http://localhost:3000'));
 
 /**
  * @type {Player[]}
@@ -11,7 +11,7 @@ let users = [];
 
 const io = new Server(server);
 
-app.use(express.static('.'));
+app.use(express.static('client'));
 
 io.on('connection', socket => {
   console.log('connection');
@@ -22,6 +22,9 @@ io.on('connection', socket => {
     socket.on('mousemove', player.handleMouseMove.bind(player));
     socket.on('shoot', player.shoot.bind(player));
     socket.on('keychange', player.handleKeyEvent.bind(player));
+    socket.on('disconnect', () => {
+
+    })
   });
 });
 
